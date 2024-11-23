@@ -5,7 +5,6 @@ class Calculator:
     def subtract(self, a, b):
         return a - b
 
-# No excessive blank lines between methods
+
 def main():
     pass
-
