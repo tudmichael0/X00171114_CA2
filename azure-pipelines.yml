@@ -1,0 +1,48 @@
+trigger:
+  - development
+  - master
+
+pool:
+  vmImage: 'ubuntu-latest'  # This will use an Ubuntu-based build agent
+
+steps:
+# Step 1: Set up Python version (e.g., Python 3.x)
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'  # Specify the Python version, you can use '3.x' or '3.9' for instance
+    addToPath: true  # Ensures Python is added to PATH for subsequent steps
+
+# Step 2: Install dependencies from your custom 'dependencies.txt' (previously requirements.txt)
+- script: |
+    pip install -r dependencies.txt  # Installing dependencies from your custom text file
+  displayName: 'Install Dependencies from dependencies.txt'
+
+# Step 3: Static code analysis with Flake8
+- script: |
+    pip install flake8  # Install flake8 for static code analysis
+    flake8 .  # Run flake8 on your project directory to check code style issues
+  displayName: 'Run Static Code Analysis with Flake8'
+
+# Step 4: Run Unit Tests with pytest and Track Code Coverage
+- script: |
+    pip install pytest  # Install pytest for unit testing
+    pip install coverage  # Install coverage for code coverage analysis
+    coverage run -m pytest  # Run the tests and track code coverage
+    coverage report  # Print coverage results to the console
+  displayName: 'Run Unit Tests with pytest and Track Code Coverage'
+
+# Step 5: Publish code coverage results (for Azure DevOps UI integration)
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'Python'  # Specify the tool to use (coverage.py)
+    summaryFileLocation: '$(Build.SourcesDirectory)/coverage.xml'  # Path to the generated coverage.xml
+    reportDirectory: '$(Build.ArtifactStagingDirectory)'  # Directory to store the results
+  displayName: 'Publish Code Coverage Results'
+
+# Step 6: Publish test results (for Azure DevOps UI integration)
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: '**/test-*.xml'  # Pattern for test result files (adjust path if needed)
+    testRunTitle: 'Unit Tests Results'
+  displayName: 'Publish Unit Test Results'
+
