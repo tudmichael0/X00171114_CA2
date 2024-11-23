@@ -1,6 +1,4 @@
-import pytest  # Only if you are using pytest in your tests
-
-# Ensure two blank lines between functions
+import pytest
 def test_add():
     assert 1 + 1 == 2
 
