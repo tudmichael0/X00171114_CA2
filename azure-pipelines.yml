@@ -7,13 +7,35 @@ trigger:
 - master
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+# Install Python and dependencies
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+    addToPath: true
 
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    python -m pip install --upgrade pip
+    pip install -r dependencies.txt
+  displayName: 'Install dependencies'
+
+# Run Unit Tests with Coverage
+- script: |
+    pytest --cov=calculator --cov-report=xml --junitxml=test-results.xml tests/
+  displayName: 'Run Tests and Collect Coverage'
+
+# Publish Test Results
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: '**/test-results.xml'
+    testRunTitle: 'Unit Test Results'
+
+# Publish Code Coverage Results
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage.xml'
+  displayName: 'Publish Code Coverage Results'
+
