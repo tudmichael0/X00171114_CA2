@@ -1,15 +1,11 @@
-# Example fix for calculator.py
-
 class Calculator:
     def add(self, a, b):
         return a + b
 
-
     def subtract(self, a, b):
         return a - b
 
-
-# The second blank line between functions
+# No excessive blank lines between methods
 def main():
-    # Some code
     pass
+
