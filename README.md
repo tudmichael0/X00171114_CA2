@@ -2,7 +2,7 @@ Calculator Application
 
 Overview
 
-This is a basic Python calculator application.
+This is a basic Python calculator applicationm
 Addition and subtraction are the key arithmetic operations it offers. 
 My project's goal is to show basic ideas like automated testing, continuous integration (CI), and version control. 
 For teaching reasons, this application aims to teach users how to integrate CI/CD pipelines with a basic Python software.
