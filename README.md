@@ -1,8 +1,8 @@
-Calculator Application
+Python Calculator with CI/CD integration
 
 Overview
 
-This is a basic Python calculator application.
+This is a basic Python calculator application
 Addition and subtraction are the key arithmetic operations it offers. 
 My project's goal is to show basic ideas like automated testing, continuous integration (CI), and version control. 
 For teaching reasons, this application aims to teach users how to integrate CI/CD pipelines with a basic Python software.
@@ -12,7 +12,7 @@ Technologies Used
 
 Python: The primary programming language used for the application.
 
-pytest: Testing framework used for unit testing the application.
+pytest, coverage.py: Testing framework used for unit testing the application.
 
 flake8: Static code analysis tool for maintaining code quality.
 
@@ -24,11 +24,11 @@ Visual Studio Code: Integrated development environment (IDE) used for coding.
 
 Local Development Setup
 
-First I entered visual studio code and made the calculator.py to act as the application.
-I created a script to act as a basic calculator with the functions of addition and subtraction, 
-I added comments to help me rememeber what does what and as well as an explaination if another coder were to look at my work.
-Once this was done I tested to see if my code worked the way I intented it to using "python calculator.py".
-It worked as desired so I made my first commit. I also added files for dependencies,unit testing,a .gitignore file and I also updated the calculator.py file as can be seen in my commits.
+First I opened Azure DevOps and created a new project, I then git cloned that repository via visual studio code.Once this was done I created calculator.py
+and I had my first commit from the Azure not from the visual studio I then pushed the new code to my local machine using viusal studio. Then I used git to get the gihub connected,
+Then on viusal studio code I added dependencies.txt, .gitignore and an empty test file. Next I commited the chnages and pushed them to both environments.
+
+
 
 Application Features
 
@@ -43,6 +43,16 @@ User-friendly Interface: The application accepts user input via the command line
 Example of Code:
 $ python calculator.py
 
+code snippiet:
+
+class Calculator:
+
+    def add(self, a, b):
+        return a + b
+
+    def subtract(self, a, b):
+        return a - b
+
 Enter first number: 5
 
 Enter second number: 3
@@ -52,3 +62,12 @@ Choose operation (+, -): +
 Result: 8
 
 CI Pipeline Implementation
+The CI pipeline is implemented using Azure DevOps and includes the following steps:
+1. Dependency Installation: Installs required dependencies from `dependencies.txt`.
+2. Static Code Analysis: Runs Flake8 to ensure code quality.
+3. Unit Testing and Coverage: Executes tests with pytest and generates a code coverage report.
+4. Publishing Results: Publishes test and code coverage results in the pipeline.
+
+Testing Strategy
+Unit tests are implemented for all features (addition and subtraction).
+Code coverage is tracked using Coverage.py and is maintained at 100%.
