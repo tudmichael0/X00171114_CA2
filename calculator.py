@@ -13,7 +13,6 @@ def main():
     print("Subtraction: 5 - 2 =", calc.subtract(5, 2))
 
 
-
 # Ensures the script runs only when executed directly
 if __name__ == "__main__":
     main()
