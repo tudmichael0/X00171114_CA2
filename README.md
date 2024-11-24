@@ -43,6 +43,16 @@ User-friendly Interface: The application accepts user input via the command line
 Example of Code:
 $ python calculator.py
 
+code snippiet:
+
+class Calculator:
+
+    def add(self, a, b):
+        return a + b
+
+    def subtract(self, a, b):
+        return a - b
+
 Enter first number: 5
 
 Enter second number: 3
@@ -52,3 +62,12 @@ Choose operation (+, -): +
 Result: 8
 
 CI Pipeline Implementation
+The CI pipeline is implemented using Azure DevOps and includes the following steps:
+1. Dependency Installation: Installs required dependencies from `dependencies.txt`.
+2. Static Code Analysis: Runs Flake8 to ensure code quality.
+3. Unit Testing and Coverage: Executes tests with pytest and generates a code coverage report.
+4. Publishing Results: Publishes test and code coverage results in the pipeline.
+
+Testing Strategy
+Unit tests are implemented for all features (addition and subtraction).
+Code coverage is tracked using Coverage.py and is maintained at 100%.
