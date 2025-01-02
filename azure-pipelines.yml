@@ -79,7 +79,7 @@ jobs:
         inputs:
           artifactName: 'build-artifact'  # Must match the artifactName in the Build Job
           downloadPath: $(Pipeline.Workspace)/artifacts  # Ensure it downloads to a known directory
-      displayName: 'Download Artifact'
+        displayName: 'Download Artifact'
 
       # Step 2: Verify Artifact Download
       - script: |
