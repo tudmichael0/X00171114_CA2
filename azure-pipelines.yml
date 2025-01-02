@@ -1,98 +1,101 @@
-name: CI/CD Pipeline
-on:
-  push:
-    branches:
-      - development
-      - master
-      - feature/CA3
+trigger:
+  - development
+  - master
+  - feature/CA3
 
 pool:
   vmImage: 'ubuntu-latest'  # This will use an Ubuntu-based build agent
 
 jobs:
-  build:
+  - job: Build
     runs-on: ubuntu-latest
     steps:
       # Step 1: Checkout Code
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
+      - task: Checkout@1
+        displayName: 'Checkout Code'
+      
       # Step 2: Install Dependencies
-      - name: Install Dependencies
-        run: pip install -r requirements.txt
+      - script: |
+          pip install -r requirements.txt
+        displayName: 'Install Dependencies'
 
       # Step 3: Build Artifact
-      - name: Build Artifact
-        run: zip -r artifact.zip src/
+      - script: |
+          zip -r artifact.zip src/
+        displayName: 'Build Artifact'
 
       # Step 4: Upload Artifact
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifact
-          path: artifact.zip
+      - task: PublishBuildArtifacts@1
+        inputs:
+          artifactName: 'build-artifact'
+          publishLocation: 'Container'
+        displayName: 'Upload Artifact'
 
-  test:
+  - job: Test
     runs-on: ubuntu-latest
-    needs: build
+    dependsOn: Build
     steps:
       # Step 1: Download Artifact
-      - name: Download Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifact
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          artifactName: 'build-artifact'
+          downloadPath: $(Build.ArtifactStagingDirectory)
+        displayName: 'Download Artifact'
 
       # Step 2: Run Unit Tests
-      - name: Run Tests
-        run: pytest tests/
+      - script: |
+          pytest tests/
+        displayName: 'Run Unit Tests'
 
       # Step 3: Static code analysis with Flake8
-      - name: Run Static Code Analysis with Flake8
-        run: |
+      - script: |
           pip install flake8
           flake8 .  # Run flake8 on your project directory to check code style issues
+        displayName: 'Run Static Code Analysis with Flake8'
 
       # Step 4: Run Unit Tests with pytest and Track Code Coverage
-      - name: Run Unit Tests with pytest and Track Code Coverage
-        run: |
+      - script: |
           pip install pytest
           pip install coverage
           pytest --maxfail=1 --disable-warnings -q --tb=short --junitxml=pytest_results.xml  # Run tests and generate XML results
           coverage run -m pytest  # Run the tests and track code coverage
           coverage xml -o coverage.xml  # Generate the coverage.xml file for Azure DevOps to use
           coverage report  # Print coverage results to the console
+        displayName: 'Run Unit Tests with pytest and Track Code Coverage'
 
-  deploy-to-test:
+  - job: DeployToTest
     runs-on: ubuntu-latest
-    needs: test
+    dependsOn: Test
     steps:
       # Step 1: Deploy to Test Environment
-      - name: Deploy to Test Environment
-        run: echo "Deploying to Test"
+      - script: |
+          echo "Deploying to Test"
+        displayName: 'Deploy to Test'
 
-  deploy-to-prod:
+  - job: DeployToProd
     runs-on: ubuntu-latest
-    needs: deploy-to-test
+    dependsOn: DeployToTest
     steps:
       # Step 1: Deploy to Production Environment
-      - name: Deploy to Production
-        run: echo "Deploying to Production"
+      - script: |
+          echo "Deploying to Production"
+        displayName: 'Deploy to Production'
 
-  publish-results:
+  - job: PublishResults
     runs-on: ubuntu-latest
-    needs: test
+    dependsOn: Test
     steps:
       # Step 1: Publish code coverage results (for Azure DevOps UI integration)
       - task: PublishCodeCoverageResults@2
         inputs:
-          codeCoverageTool: 'Python'  # Use 'Python' for Python-based code coverage
-          summaryFileLocation: '$(Build.SourcesDirectory)/coverage.xml'  # Path to the generated coverage.xml
-          reportDirectory: '$(Build.ArtifactStagingDirectory)'  # Directory to store the results
+          codeCoverageTool: 'Cobertura'  # Use 'Cobertura' for Python-based coverage
+          summaryFileLocation: '$(Build.SourcesDirectory)/coverage.xml'
+          reportDirectory: '$(Build.ArtifactStagingDirectory)'
         displayName: 'Publish Code Coverage Results'
 
       # Step 2: Publish test results (for Azure DevOps UI integration)
       - task: PublishTestResults@2
         inputs:
-          testResultsFiles: '**/pytest_results.xml'  # Use the generated XML file for test results
+          testResultsFiles: '**/pytest_results.xml'
           testRunTitle: 'Unit Tests Results'
         displayName: 'Publish Unit Test Results'
