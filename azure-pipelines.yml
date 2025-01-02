@@ -8,7 +8,8 @@ pool:
 
 jobs:
   - job: Build
-    runs-on: ubuntu-latest
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
       # Step 1: Checkout Code
       - task: Checkout@1
@@ -32,8 +33,9 @@ jobs:
         displayName: 'Upload Artifact'
 
   - job: Test
-    runs-on: ubuntu-latest
     dependsOn: Build
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
       # Step 1: Download Artifact
       - task: DownloadBuildArtifacts@0
@@ -64,8 +66,9 @@ jobs:
         displayName: 'Run Unit Tests with pytest and Track Code Coverage'
 
   - job: DeployToTest
-    runs-on: ubuntu-latest
     dependsOn: Test
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
       # Step 1: Deploy to Test Environment
       - script: |
@@ -73,8 +76,9 @@ jobs:
         displayName: 'Deploy to Test'
 
   - job: DeployToProd
-    runs-on: ubuntu-latest
     dependsOn: DeployToTest
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
       # Step 1: Deploy to Production Environment
       - script: |
@@ -82,8 +86,9 @@ jobs:
         displayName: 'Deploy to Production'
 
   - job: PublishResults
-    runs-on: ubuntu-latest
     dependsOn: Test
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
       # Step 1: Publish code coverage results (for Azure DevOps UI integration)
       - task: PublishCodeCoverageResults@2
