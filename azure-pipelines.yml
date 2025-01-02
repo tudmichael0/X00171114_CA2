@@ -1,20 +1,23 @@
 trigger:
-  - development
-  - master
-  - feature/CA3
+  branches:
+    include:
+      - development
+      - master
+      - feature/CA3
 
 pool:
   vmImage: 'ubuntu-latest'  # This will use an Ubuntu-based build agent
 
 jobs:
   - job: Build
+    displayName: 'Build Job'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
       # Step 1: Checkout Code
       - task: Checkout@1
         displayName: 'Checkout Code'
-      
+
       # Step 2: Install Dependencies
       - script: |
           pip install -r requirements.txt
@@ -34,6 +37,7 @@ jobs:
 
   - job: Test
     dependsOn: Build
+    displayName: 'Test Job'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -41,7 +45,7 @@ jobs:
       - task: DownloadBuildArtifacts@0
         inputs:
           artifactName: 'build-artifact'
-          downloadPath: $(Build.ArtifactStagingDirectory)/artifact  # Modify this path if necessary
+          downloadPath: $(Build.ArtifactStagingDirectory)/artifact  # Modify path if necessary
         displayName: 'Download Artifact'
 
       # Step 2: Run Unit Tests
@@ -49,7 +53,7 @@ jobs:
           pytest tests/
         displayName: 'Run Unit Tests'
 
-      # Step 3: Static code analysis with Flake8
+      # Step 3: Static Code Analysis with Flake8
       - script: |
           pip install flake8
           flake8 .  # Run flake8 on your project directory to check code style issues
@@ -67,6 +71,7 @@ jobs:
 
   - job: DeployToTest
     dependsOn: Test
+    displayName: 'Deploy to Test'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -77,6 +82,7 @@ jobs:
 
   - job: DeployToProd
     dependsOn: DeployToTest
+    displayName: 'Deploy to Production'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -87,10 +93,11 @@ jobs:
 
   - job: PublishResults
     dependsOn: Test
+    displayName: 'Publish Results'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-      # Step 1: Publish code coverage results (for Azure DevOps UI integration)
+      # Step 1: Publish Code Coverage Results (for Azure DevOps UI integration)
       - task: PublishCodeCoverageResults@2
         inputs:
           codeCoverageTool: 'Cobertura'  # Use 'Cobertura' for Python-based coverage
@@ -98,7 +105,7 @@ jobs:
           reportDirectory: '$(Build.ArtifactStagingDirectory)'  # Ensure the path is correct
         displayName: 'Publish Code Coverage Results'
 
-      # Step 2: Publish test results (for Azure DevOps UI integration)
+      # Step 2: Publish Test Results (for Azure DevOps UI integration)
       - task: PublishTestResults@2
         inputs:
           testResultsFiles: '**/pytest_results.xml'
