@@ -55,12 +55,13 @@ jobs:
       # Step 7: Build Artifact
       - script: |
           mkdir build-output  # Create a directory for the artifact
+          echo "Directory created: $(pwd)/build-output"
           cp -r * build-output/  # Copy all project files into the directory
+          echo "Files copied: $(ls -l build-output/)"
           zip -r build-output/artifact.zip build-output/  # Package the directory into a zip file
-          ls -l build-output/  # List files to confirm artifact.zip exists
+          echo "Artifact zipped: $(ls -l build-output/)"
         displayName: 'Build Artifact'
-
-
+  
       # Step 8: Upload Artifact
       - task: PublishBuildArtifacts@1
         inputs:
