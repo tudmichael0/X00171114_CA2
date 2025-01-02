@@ -16,6 +16,12 @@ jobs:
           versionSpec: '3.x'  # Specify the Python version, you can use '3.x' or '3.9' for instance
           addToPath: true  # Ensures Python is added to PATH for subsequent steps
 
+      - script: |
+          python --version  # Check Python version
+          pip --version  # Check pip version
+          pip list  # List installed packages to verify pytest and coverage are installed
+        displayName: 'Verify Python and Pip Versions'
+
       # Step 2: Install dependencies from your custom 'dependencies.txt' (previously requirements.txt)
       - script: |
           pip install -r dependencies.txt  # Installing dependencies from your custom text file
@@ -36,6 +42,7 @@ jobs:
           coverage xml -o coverage.xml  # Generate the coverage.xml file for Azure DevOps to use
           coverage report  # Print coverage results to the console
         displayName: 'Run Unit Tests with pytest and Track Code Coverage'
+
 
       # Step 5: Publish code coverage results (for Azure DevOps UI integration)
       - task: PublishCodeCoverageResults@2  # Use version 2 as version 1 is deprecated
