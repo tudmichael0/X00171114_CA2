@@ -41,7 +41,7 @@ jobs:
       - task: DownloadBuildArtifacts@0
         inputs:
           artifactName: 'build-artifact'
-          downloadPath: $(Build.ArtifactStagingDirectory)  # Ensure this path exists or is valid
+          downloadPath: $(Build.ArtifactStagingDirectory)/artifact  # Modify this path if necessary
         displayName: 'Download Artifact'
 
       # Step 2: Run Unit Tests
