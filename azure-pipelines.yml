@@ -52,15 +52,14 @@ jobs:
           testRunTitle: 'Unit Tests Results'
         displayName: 'Publish Unit Test Results'
 
+
       # Step 7: Build Artifact
       - script: |
           mkdir build-output  # Create a directory for the artifact
           cp -r * build-output/  # Copy all project files into the directory
-          echo "Files in build-output directory before zipping:"
-          ls -l build-output/  # List files to confirm they're copied
           zip -r build-output/artifact.zip build-output/  # Package the directory into a zip file
-          echo "Files in build-output directory after zipping:"
-          ls -l build-output/  # Confirm artifact.zip exists
+          ls -l build-output/  # List files to confirm artifact.zip exists
+          cp -r build-output/ $(Build.ArtifactStagingDirectory)/  # Ensure the artifact is staged properly
         displayName: 'Build Artifact'
 
   
@@ -72,7 +71,7 @@ jobs:
       - task: PublishBuildArtifacts@1
         inputs:
           artifactName: 'build-artifact'
-          path: $(Build.ArtifactStagingDirectory)/build-output/  # Absolute path to the directory
+          path: $(Build.ArtifactStagingDirectory)/build-output/  # Correct artifact staging path
           publishLocation: 'Container'
         displayName: 'Upload Artifact'
 
