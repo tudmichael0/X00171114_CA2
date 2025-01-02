@@ -54,19 +54,19 @@ jobs:
 
      # Step 7: Build Artifact
      - script: |
-     mkdir build-output  # Create a directory for the artifact
-     cp -r * build-output/  # Copy all project files into the directory
-     zip -r build-output/artifact.zip build-output/  # Package the directory into a zip file
-     ls -l build-output/  # List files to confirm artifact.zip exists
-  displayName: 'Build Artifact'
+          mkdir build-output  # Create a directory for the artifact
+          cp -r * build-output/  # Copy all project files into the directory
+          zip -r build-output/artifact.zip build-output/  # Package the directory into a zip file
+          ls -l build-output/  # List files to confirm artifact.zip exists
+       displayName: 'Build Artifact'
 
-# Step 8: Upload Artifact
-- task: PublishBuildArtifacts@1
-  inputs:
-    artifactName: 'build-artifact'
-    path: build-output/  # Upload the entire directory containing artifact.zip
-    publishLocation: 'Container'
-  displayName: 'Upload Artifact'
+     # Step 8: Upload Artifact
+     - task: PublishBuildArtifacts@1
+       inputs:
+         artifactName: 'build-artifact'
+         path: build-output/  # Upload the entire directory containing artifact.zip
+         publishLocation: 'Container'
+       displayName: 'Upload Artifact'
 
   # Test Job (Runs after Build)
   - job: Test
