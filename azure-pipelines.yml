@@ -54,7 +54,7 @@ jobs:
 
       # Step 7: Build Artifact (package the code into a deployable artifact)
       - script: |
-          zip -r artifact.zip src/  # Package the code into a zip file
+          zip -r artifact.zip .  # Package the code into a zip file
         displayName: 'Build Artifact'
 
       # Step 8: Upload Artifact
@@ -79,11 +79,6 @@ jobs:
       - script: |
           pytest tests/  # Run tests again if needed
         displayName: 'Run Unit Tests'
-
-      # Step 3: Build Artifact
-      - script: |
-          zip -r artifact.zip .  # Zip everything in the root directory and its subfolders
-        displayName: 'Build Artifact'
 
   # Deployment Job to Test (Requires Environment Approval)
   - deployment: DeployToTest
