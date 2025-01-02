@@ -1,6 +1,7 @@
 trigger:
   - development
   - master
+  - feature/CA3
 
 pool:
   vmImage: 'ubuntu-latest'  # This will use an Ubuntu-based build agent
