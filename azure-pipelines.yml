@@ -82,9 +82,8 @@ jobs:
 
       # Step 3: Build Artifact
       - script: |
-          ls -R  # List the directory contents to verify the 'src/' directory exists
-          zip -r artifact.zip ./src/  # Package the code into a zip file
-        displayName: 'Build Artifact'  
+          zip -r artifact.zip .  # Zip everything in the root directory and its subfolders
+        displayName: 'Build Artifact'
 
   # Deployment Job to Test (Requires Environment Approval)
   - deployment: DeployToTest
