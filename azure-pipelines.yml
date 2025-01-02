@@ -36,7 +36,7 @@ steps:
 # Step 5: Publish code coverage results (for Azure DevOps UI integration)
 - task: PublishCodeCoverageResults@2  # Use version 2 as version 1 is deprecated
   inputs:
-    codeCoverageTool: 'Python'  # Specify the tool to use (coverage.py)
+    codeCoverageTool: 'Cobertura'  # Specify the tool to use (coverage.py)
     summaryFileLocation: '$(Build.SourcesDirectory)/coverage.xml'  # Path to the generated coverage.xml
     reportDirectory: '$(Build.ArtifactStagingDirectory)'  # Directory to store the results
   displayName: 'Publish Code Coverage Results'
