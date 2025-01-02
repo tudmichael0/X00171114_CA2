@@ -18,6 +18,12 @@ jobs:
       - task: Checkout@1
         displayName: 'Checkout Code'
 
+      # Debugging step to print variables
+      - script: |
+          echo "Build.ArtifactStagingDirectory: $(Build.ArtifactStagingDirectory)"
+          echo "Build.SourcesDirectory: $(Build.SourcesDirectory)"
+        displayName: 'Print Pipeline Variables'
+
       # Step 2: Install Dependencies
       - script: |
           pip install -r requirements.txt
@@ -45,7 +51,7 @@ jobs:
       - task: DownloadBuildArtifacts@0
         inputs:
           artifactName: 'build-artifact'
-          downloadPath: $(Build.ArtifactStagingDirectory)/artifact  # Modify path if necessary
+          downloadPath: $(Build.ArtifactStagingDirectory)/artifact  # Explicitly defined path
         displayName: 'Download Artifact'
 
       # Step 2: Run Unit Tests
