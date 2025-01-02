@@ -41,7 +41,7 @@ jobs:
       - task: DownloadBuildArtifacts@0
         inputs:
           artifactName: 'build-artifact'
-          downloadPath: $(Build.ArtifactStagingDirectory)
+          downloadPath: $(Build.ArtifactStagingDirectory)  # Ensure this path exists or is valid
         displayName: 'Download Artifact'
 
       # Step 2: Run Unit Tests
@@ -95,7 +95,7 @@ jobs:
         inputs:
           codeCoverageTool: 'Cobertura'  # Use 'Cobertura' for Python-based coverage
           summaryFileLocation: '$(Build.SourcesDirectory)/coverage.xml'
-          reportDirectory: '$(Build.ArtifactStagingDirectory)'
+          reportDirectory: '$(Build.ArtifactStagingDirectory)'  # Ensure the path is correct
         displayName: 'Publish Code Coverage Results'
 
       # Step 2: Publish test results (for Azure DevOps UI integration)
