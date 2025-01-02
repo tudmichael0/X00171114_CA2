@@ -80,22 +80,28 @@ jobs:
           pytest tests/  # Run tests again if needed
         displayName: 'Run Unit Tests'
 
-  # Deployment Job (Requires Environment Approval)
-  - job: DeployToTest
+  # Deployment Job to Test (Requires Environment Approval)
+  - deployment: DeployToTest
+    environment: 'Test'  # This will require approval for deploying to Test environment
     dependsOn: Test
     condition: succeeded()  # Proceed only if Test job succeeds
-    environment: 'Test'  # Define the environment name for approval gate
-    steps:
-      - script: |
-          echo "Deploying to Test"
-        displayName: 'Deploy to Test'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - script: |
+                echo "Deploying to Test"
+              displayName: 'Deploy to Test'
 
-  # Deployment to Production Job (Requires Environment Approval)
-  - job: DeployToProd
+  # Deployment Job to Production (Requires Environment Approval)
+  - deployment: DeployToProd
+    environment: 'Production'  # This will require approval for deploying to Production environment
     dependsOn: DeployToTest
     condition: succeeded()  # Proceed only if DeployToTest succeeds
-    environment: 'Production'  # Define the environment name for approval gate
-    steps:
-      - script: |
-          echo "Deploying to Production"
-        displayName: 'Deploy to Production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - script: |
+                echo "Deploying to Production"
+              displayName: 'Deploy to Production'
