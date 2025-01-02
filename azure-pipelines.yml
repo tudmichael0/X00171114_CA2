@@ -80,6 +80,12 @@ jobs:
           pytest tests/  # Run tests again if needed
         displayName: 'Run Unit Tests'
 
+      # Step 3: Build Artifact
+      - script: |
+          ls -R  # List the directory contents to verify the 'src/' directory exists
+          zip -r artifact.zip ./src/  # Package the code into a zip file
+        displayName: 'Build Artifact'  
+
   # Deployment Job to Test (Requires Environment Approval)
   - deployment: DeployToTest
     environment: 'Test'  # This will require approval for deploying to Test environment
