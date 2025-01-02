@@ -53,21 +53,20 @@ jobs:
         displayName: 'Publish Unit Test Results'
 
      # Step 7: Build Artifact
-      - script: |
-          mkdir build-output  # Create a directory for the artifact
-          cp -r * build-output/  # Copy all project files into the directory
-          cd build-output
-          zip -r artifact.zip .  # Package the directory into a zip file
-          ls -l  # List files to confirm artifact.zip exists
-        displayName: 'Build Artifact'
+     - script: |
+     mkdir build-output  # Create a directory for the artifact
+     cp -r * build-output/  # Copy all project files into the directory
+     zip -r build-output/artifact.zip build-output/  # Package the directory into a zip file
+     ls -l build-output/  # List files to confirm artifact.zip exists
+  displayName: 'Build Artifact'
 
-      # Step 8: Publish Artifact
-      - task: PublishBuildArtifacts@1
-        inputs:
-          artifactName: 'build-artifact'
-          path: build-output/artifact.zip
-          publishLocation: 'Container'
-        displayName: 'Upload Artifact'
+# Step 8: Upload Artifact
+- task: PublishBuildArtifacts@1
+  inputs:
+    artifactName: 'build-artifact'
+    path: build-output/  # Upload the entire directory containing artifact.zip
+    publishLocation: 'Container'
+  displayName: 'Upload Artifact'
 
   # Test Job (Runs after Build)
   - job: Test
@@ -76,14 +75,14 @@ jobs:
     steps:
       # Step 1: Download Artifact
       - task: DownloadBuildArtifacts@0
-        inputs:
-          artifactName: 'build-artifact'
-          downloadPath: $(Build.ArtifactStagingDirectory)
-        displayName: 'Download Artifact'
-        
+      inputs:
+        artifactName: 'build-artifact'  # Must match the artifactName in the Build Job
+        downloadPath: $(Pipeline.Workspace)/artifacts  # Ensure it downloads to a known directory
+      displayName: 'Download Artifact'
+
       # Step 2: Verify Artifact Download
       - script: |
-          ls $(Build.ArtifactStagingDirectory)  # Verify that artifact.zip is downloaded
+          ls $(Pipeline.Workspace)/artifacts/  # Verify the artifact.zip exists
         displayName: 'Verify Artifact Download'
 
       # Step 3: Run Unit Tests (optional repeat)
