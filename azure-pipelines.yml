@@ -76,9 +76,9 @@ jobs:
     steps:
       # Step 1: Download Artifact
       - task: DownloadBuildArtifacts@0
-      inputs:
-        artifactName: 'build-artifact'  # Must match the artifactName in the Build Job
-        downloadPath: $(Pipeline.Workspace)/artifacts  # Ensure it downloads to a known directory
+        inputs:
+          artifactName: 'build-artifact'  # Must match the artifactName in the Build Job
+          downloadPath: $(Pipeline.Workspace)/artifacts  # Ensure it downloads to a known directory
       displayName: 'Download Artifact'
 
       # Step 2: Verify Artifact Download
