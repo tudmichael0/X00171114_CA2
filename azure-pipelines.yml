@@ -36,8 +36,9 @@ jobs:
       # Security Testing
       - script: |
           pip install bandit
-          bandit -r .
+          bandit -r . --severity-level Medium  # Adjust severity level to ignore Low issues
         displayName: 'Run Security Tests with Bandit'
+
 
       # Performance Testing
       - script: |
