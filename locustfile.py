@@ -4,10 +4,8 @@ from locust  import HttpUser, task, between
 
 
 class MyUser(HttpUser):
-    # Defines the wait time between tasks
- wait_time = between(1, 5)
+    wait_time = between(1, 5) # Defines the wait time between tasks
 
     @task
     def test_endpoint(self):
-        # Replace '/' with the endpoint you want to test
-        self.client.get("/")
+        self.client.get("/") # Replace '/' with the endpoint you want to test
