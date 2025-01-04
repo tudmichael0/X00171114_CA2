@@ -99,7 +99,14 @@ jobs:
           ls $(Pipeline.Workspace)/artifacts/  # Verify the artifact.zip exists
         displayName: 'Verify Artifact Download'
 
-      # Step 3: Run Unit Tests (optional repeat)
+
+        # Step 3: Install Dependencies (including pytest)
+      - script: |
+          python --version  # Check Python version
+          pip install pytest  # Ensure pytest is installed
+        displayName: 'Install Dependencies for Testing'
+
+      # Step 4: Run Unit Tests (optional repeat)
       - script: |
           pytest tests/  # Run tests again if needed
         displayName: 'Run Unit Tests'
