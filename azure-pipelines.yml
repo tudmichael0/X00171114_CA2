@@ -42,8 +42,8 @@ jobs:
       # Performance Testing
       - script: |
           pip install locust
-          locust --headless -u 10 -r 1 --run-time 1m --host=http://your-api-url
-        displayName: 'Run Performance Tests with Locust'
+          locust -f locustfile.py --headless -u 10 -r 2 --run-time 1m
+      displayName: 'Run Performance Tests with Locust'
 
       # Step 4: Run Unit Tests with pytest and Track Code Coverage
       - script: |
