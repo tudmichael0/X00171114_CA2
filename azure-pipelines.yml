@@ -120,7 +120,7 @@ jobs:
         displayName: 'Install Dependencies for Testing'
 
         # Install necessary dependencies for headless testing
-    - script: |
+      - script: |
         sudo apt-get update
         sudo apt-get install -y chromium-chromedriver  # Install ChromeDriver for headless Chrome
         sudo apt-get install -y libnss3 libgconf-2-4 libatk-bridge2.0-0 libatk1.0-0 libcups2 libxcomposite1 libxdamage1 libxrandr2  # Required libraries for headless Chrome
