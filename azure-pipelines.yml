@@ -118,9 +118,15 @@ jobs:
           pip install pytest  # Ensure pytest is installed
         displayName: 'Install Dependencies for Testing'
 
-        # Selenium UAT Tests
+        # Run Selenium UAT Tests
       - script: |
-          pip install selenium
+          # Install necessary dependencies for headless Chrome (example for ChromeDriver)
+          sudo apt-get update
+          sudo apt-get install -y chromium-chromedriver
+          export DISPLAY=:99.0
+          google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 &
+          
+          # Run the Selenium UAT tests
           python -m unittest discover -s tests/selenium -p '*_test.py'
         displayName: 'Run Selenium UAT Tests'
 
