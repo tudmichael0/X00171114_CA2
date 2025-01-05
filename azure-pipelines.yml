@@ -137,8 +137,6 @@ jobs:
           google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 &
         displayName: 'Prepare Environment for Selenium UAT Tests (Headless)'
 
-      displayName: 'Prepare Environment for Selenium UAT Tests (Headless)'
-
           # Run Selenium UAT Tests
         - script: |
             python -m unittest discover -s tests/selenium -p '*_test.py'
