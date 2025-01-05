@@ -139,7 +139,7 @@ jobs:
 
       # Run Selenium UAT Tests
       - script: |
-          python -m unittest discover -s tests/selenium -p '*_test.py'
+          python -m unittest discover -s tests -p '*_test.py'
         displayName: 'Run Selenium UAT Tests'
 
 
