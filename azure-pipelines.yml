@@ -116,19 +116,33 @@ jobs:
       - script: |
           python --version  # Check Python version
           pip install pytest  # Ensure pytest is installed
+          pip install selenium  # Install Selenium for UAT tests
         displayName: 'Install Dependencies for Testing'
 
-        # Run Selenium UAT Tests
-      - script: |
-          # Install necessary dependencies for headless Chrome (example for ChromeDriver)
-          sudo apt-get update
-          sudo apt-get install -y chromium-chromedriver
-          export DISPLAY=:99.0
-          google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 &
-          
-          # Run the Selenium UAT tests
-          python -m unittest discover -s tests/selenium -p '*_test.py'
-        displayName: 'Run Selenium UAT Tests'
+        # Install necessary dependencies for headless testing
+    - script: |
+        sudo apt-get update
+        sudo apt-get install -y chromium-chromedriver  # Install ChromeDriver for headless Chrome
+        sudo apt-get install -y libnss3 libgconf-2-4 libatk-bridge2.0-0 libatk1.0-0 libcups2 libxcomposite1 libxdamage1 libxrandr2  # Required libraries for headless Chrome
+        sudo apt-get install -y fonts-liberation  # Fonts needed by Chrome
+        export DISPLAY=:99  # Set the display for Xvfb
+
+        # Install Xvfb and run it for virtual display
+        sudo apt-get install -y xvfb
+        Xvfb :99 -screen 0 1280x1024x24 &  # Start virtual frame buffer
+        sleep 3  # Wait for Xvfb to start
+
+        # Start Chrome in headless mode
+        google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 &
+
+      displayName: 'Prepare Environment for Selenium UAT Tests (Headless)'
+
+          # Run Selenium UAT Tests
+        - script: |
+            # Run Selenium UAT tests
+            python -m unittest discover -s tests/selenium -p '*_test.py'
+          displayName: 'Run Selenium UAT Tests'
+
 
       # Step 4: Run Unit Tests (optional repeat)
       - script: |
