@@ -7,7 +7,7 @@ class Calculator:
 
 
 def main():
-    # Example usage of the Calculator class/ New comment for video
+    # Example usage of the Calculator class/ New comment for videos
     calc = Calculator()
     print("Addition: 2 + 3 =", calc.add(2, 3))
     print("Subtraction: 5 - 2 =", calc.subtract(5, 2))
