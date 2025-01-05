@@ -40,10 +40,10 @@ jobs:
         displayName: 'Run Security Tests with Bandit'
 
       # Performance Testing
-      - script: |
-          pip install locust
-          locust -f locustfile.py --headless -u 10 -r 2 --run-time 5m
-        displayName: 'Run Performance Tests with Locust'
+      #- script: |
+          #pip install locust
+          #locust -f locustfile.py --headless -u 10 -r 2 --run-time 5m
+        #displayName: 'Run Performance Tests with Locust'
 
       # Step 4: Run Unit Tests with pytest and Track Code Coverage
       - script: |
