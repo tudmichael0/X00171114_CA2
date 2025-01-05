@@ -1,49 +1,175 @@
 trigger:
   - development
   - master
+  - feature/CA3
 
 pool:
   vmImage: 'ubuntu-latest'  # This will use an Ubuntu-based build agent
 
-steps:
-# Step 1: Set up Python version (e.g., Python 3.x)
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.x'  # Specify the Python version, you can use '3.x' or '3.9' for instance
-    addToPath: true  # Ensures Python is added to PATH for subsequent steps
+jobs:
+  # Build Job
+  - job: Build
+    steps:
+      # Step 1: Set up Python version (e.g., Python 3.x)
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.x'  # Specify the Python version, you can use '3.x' or '3.9' for instance
+          addToPath: true  # Ensures Python is added to PATH for subsequent steps
 
-# Step 2: Install dependencies from your custom 'dependencies.txt' (previously requirements.txt)
-- script: |
-    pip install -r dependencies.txt  # Installing dependencies from your custom text file
-  displayName: 'Install Dependencies from dependencies.txt'
+      - script: |
+          python --version  # Check Python version
+          pip --version  # Check pip version
+          pip list  # List installed packages to verify pytest and coverage are installed
+        displayName: 'Verify Python and Pip Versions'
 
-# Step 3: Static code analysis with Flake8
-- script: |
-    pip install flake8  # Install flake8 for static code analysis
-    flake8 .  # Run flake8 on your project directory to check code style issues
-  displayName: 'Run Static Code Analysis with Flake8'
+      # Step 2: Install dependencies from your custom 'dependencies.txt' (previously requirements.txt)
+      - script: |
+          pip install -r dependencies.txt  # Installing dependencies from your custom text file
+        displayName: 'Install Dependencies from dependencies.txt'
 
-# Step 4: Run Unit Tests with pytest and Track Code Coverage
-- script: |
-    pip install pytest  # Install pytest for unit testing
-    pip install coverage  # Install coverage for code coverage analysis
-    pytest --maxfail=1 --disable-warnings -q --tb=short --junitxml=pytest_results.xml  # Run tests and generate XML results
-    coverage run -m pytest  # Run the tests and track code coverage
-    coverage xml -o coverage.xml  # Generate the coverage.xml file for Azure DevOps to use
-    coverage report  # Print coverage results to the console
-  displayName: 'Run Unit Tests with pytest and Track Code Coverage'
+      # Step 3: Static code analysis with Flake8
+      - script: |
+          pip install flake8  # Install flake8 for static code analysis
+          flake8 .  # Run flake8 on your project directory to check code style issues
+        displayName: 'Run Static Code Analysis with Flake8'
 
-# Step 5: Publish code coverage results (for Azure DevOps UI integration)
-- task: PublishCodeCoverageResults@2  # Use version 2 as version 1 is deprecated
-  inputs:
-    codeCoverageTool: 'Python'  # Specify the tool to use (coverage.py)
-    summaryFileLocation: '$(Build.SourcesDirectory)/coverage.xml'  # Path to the generated coverage.xml
-    reportDirectory: '$(Build.ArtifactStagingDirectory)'  # Directory to store the results
-  displayName: 'Publish Code Coverage Results'
+      # Security Testing
+      - script: |
+          pip install bandit  # Ensure Bandit is installed
+          bandit -r . --severity-level medium --confidence-level high
+        displayName: 'Run Security Tests with Bandit'
 
-# Step 6: Publish test results (for Azure DevOps UI integration)
-- task: PublishTestResults@2
-  inputs:
-    testResultsFiles: '**/pytest_results.xml'  # Use the generated XML file for test results
-    testRunTitle: 'Unit Tests Results'
-  displayName: 'Publish Unit Test Results'
+      # Performance Testing
+      #- script: |
+          #pip install locust
+          #locust -f locustfile.py --headless -u 10 -r 2 --run-time 5m
+        #displayName: 'Run Performance Tests with Locust'
+
+      # Step 4: Run Unit Tests with pytest and Track Code Coverage
+      - script: |
+          pip install pytest  # Install pytest for unit testing
+          pip install coverage  # Install coverage for code coverage analysis
+          pytest --maxfail=1 --disable-warnings -q --tb=short --junitxml=pytest_results.xml  # Run tests and generate XML results
+          coverage run -m pytest  # Run the tests and track code coverage
+          coverage xml -o coverage.xml  # Generate the coverage.xml file for Azure DevOps to use
+          coverage report  # Print coverage results to the console
+        displayName: 'Run Unit Tests with pytest and Track Code Coverage'
+
+
+      # Step 5: Publish code coverage results (for Azure DevOps UI integration)
+      - task: PublishCodeCoverageResults@2  # Use version 2 as version 1 is deprecated
+        inputs:
+          codeCoverageTool: 'Cobertura'  # Specify the tool to use (coverage.py)
+          summaryFileLocation: '$(Build.SourcesDirectory)/coverage.xml'  # Path to the generated coverage.xml
+          reportDirectory: '$(Build.ArtifactStagingDirectory)'  # Directory to store the results
+        displayName: 'Publish Code Coverage Results'
+
+      # Step 6: Publish test results (for Azure DevOps UI integration)
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFiles: '**/pytest_results.xml'  # Use the generated XML file for test results
+          testRunTitle: 'Unit Tests Results'
+        displayName: 'Publish Unit Test Results'
+
+
+      # Step 7: Build Artifact
+      - script: |
+          mkdir build-output  # Create a directory for the artifact
+          cp -r * build-output/  # Copy all project files into the directory
+          zip -r build-output/artifact.zip build-output/  # Package the directory into a zip file
+          ls -l build-output/  # List files to confirm artifact.zip exists
+          cp -r build-output/ $(Build.ArtifactStagingDirectory)/  # Ensure the artifact is staged properly
+        displayName: 'Build Artifact'
+
+  
+      # Step 8: Upload Artifact
+      - script: |
+          echo "Uploading artifacts from: $(Build.ArtifactStagingDirectory)/build-output/"
+        displayName: 'Verify Artifact Upload Path'
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          artifactName: 'build-artifact'
+          path: $(Build.ArtifactStagingDirectory)/build-output/  # Correct artifact staging path
+          publishLocation: 'Container'
+        displayName: 'Upload Artifact'
+
+  # Test Job (Runs after Build)
+  - job: Test
+    dependsOn: Build
+    condition: succeeded()  # Proceed only if Build job succeeds
+    steps:
+      # Step 1: Download Artifact
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          artifactName: 'build-artifact'  # Must match the artifactName in the Build Job
+          downloadPath: $(Pipeline.Workspace)/artifacts  # Ensure it downloads to a known directory
+        displayName: 'Download Artifact'
+
+      # Step 2: Verify Artifact Download
+      - script: |
+          ls $(Pipeline.Workspace)/artifacts/  # Verify the artifact.zip exists
+        displayName: 'Verify Artifact Download'
+
+
+        # Step 3: Install Dependencies (including pytest)
+      - script: |
+          python --version  # Check Python version
+          pip install pytest  # Ensure pytest is installed
+          pip install selenium  # Install Selenium for UAT tests
+        displayName: 'Install Dependencies for Testing'
+
+
+      # Install necessary dependencies for headless testing
+      - script: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-chromedriver  
+          sudo apt-get install -y libnss3 libgconf-2-4 libatk-bridge2.0-0 libatk1.0-0 libcups2 libxcomposite1 libxdamage1 libxrandr2
+          sudo apt-get install -y fonts-liberation  
+          export DISPLAY=:99  
+
+         
+          sudo apt-get install -y xvfb
+          Xvfb :99 -screen 0 1280x1024x24 &  
+          sleep 3  # Wait for Xvfb to start
+
+          # Start Chrome in headless mode
+          google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 &
+        displayName: 'Prepare Environment for Selenium UAT Tests (Headless)'
+
+      # Run Selenium UAT Tests
+      - script: |
+          python -m unittest discover -s tests -p '*_test.py'
+        displayName: 'Run Selenium UAT Tests'
+
+
+      # Step 4: Run Unit Tests (optional repeat)
+      - script: |
+          pytest tests/  
+        displayName: 'Run Unit Tests'
+
+  # Deployment Job to Test (Requires Environment Approval)
+  - deployment: DeployToTest
+    environment: 'Test'  # This will require approval for deploying to Test environment
+    dependsOn: Test
+    condition: succeeded()  # Proceed only if Test job succeeds
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - script: |
+                echo "Deploying to Test"
+              displayName: 'Deploy to Test'
+
+  # Deployment Job to Production (Requires Environment Approval)
+  - deployment: DeployToProd
+    environment: 'Production'  # This will require approval for deploying to Production environment
+    dependsOn: DeployToTest
+    condition: succeeded()  # Proceed only if DeployToTest succeeds
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - script: |
+                echo "Deploying to Production"
+              displayName: 'Deploy to Production'
