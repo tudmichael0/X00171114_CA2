@@ -2,11 +2,7 @@ Python Calculator with CI/CD integration
 
 Overview
 
-This is a basic Python calculator application
-Addition and subtraction are the key arithmetic operations it offers. 
-My project's goal is to show basic ideas like automated testing, continuous integration (CI), and version control. 
-For teaching reasons, this application aims to teach users how to integrate CI/CD pipelines with a basic Python software.
-
+This is a basic Python calculator application Addition and subtraction are the key arithmetic operations it offers. My project's goal is to show basic ideas like automated testing, continuous integration (CI), and version control. For teaching reasons, this application aims to teach users how to integrate CI/CD pipelines with a basic Python software.
 
 Technologies Used
 
@@ -22,8 +18,6 @@ Azure DevOps: Used for automating the build, test, and deployment pipelines.
 
 Visual Studio Code: Integrated development environment (IDE) used for coding.
 
-
-
 Application Features
 
 The calculator application includes the following features:
@@ -34,19 +28,17 @@ Subtraction: Allows the user to subtract one number from another.
 
 User-friendly Interface: The application accepts user input via the command line and outputs the result.
 
-Example of Code:
-$ python calculator.py
+Example of Code: $ python calculator.py
 
 code snippiet:
 
 class Calculator:
 
-    def add(self, a, b):
-        return a + b
+def add(self, a, b):
+    return a + b
 
-    def subtract(self, a, b):
-        return a - b
-
+def subtract(self, a, b):
+    return a - b
 Enter first number: 5
 
 Enter second number: 3
@@ -55,13 +47,12 @@ Choose operation (+, -): +
 
 Result: 8
 
-CI Pipeline Implementation
-The CI pipeline is implemented using Azure DevOps and includes the following steps:
-1. Dependency Installation: Installs required dependencies from `dependencies.txt`.
-2. Static Code Analysis: Runs Flake8 to ensure code quality.
-3. Unit Testing and Coverage: Executes tests with pytest and generates a code coverage report.
-4. Publishing Results: Publishes test and code coverage results in the pipeline.
+CI Pipeline Implementation The CI pipeline is implemented using Azure DevOps and includes the following steps:
 
+Dependency Installation: Installs required dependencies from dependencies.txt.
+Static Code Analysis: Runs Flake8 to ensure code quality.
+Unit Testing and Coverage: Executes tests with pytest and generates a code coverage report.
+Publishing Results: Publishes test and code coverage results in the pipeline.
 What I Learned:
 
 How CI pipelines work in practice
